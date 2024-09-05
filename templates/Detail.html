@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Credential Details</title>
+    <style>
+        .main-content {
+            padding: 20px;
+        }
+
+        /* Search bar styling */
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            padding: 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-button {
+            padding: 10px 15px;
+            background-color: #f0ad4e;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: #ec971f;
+        }
+
+        /* Layout for details */
+        .details-container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .details-pdf {
+            flex: 2;
+            padding-right: 20px;
+        }
+
+        .details-pdf iframe {
+            width: 100%;
+            height: 800px;
+        }
+
+        .details-info {
+            flex: 2;
+        }
+
+        .details-info p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .details-info label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input class="search-bar" type="text" placeholder="Credential Hash" id="credentialHash">
+        <input class="search-bar" type="text" placeholder="Holder Address" id="holderAddress">
+        <button class="search-button" onclick="fetchCredentialDetails()">Search</button>
+    </div>
+
+    <!-- Credential Details -->
+    <div id="details" class="details-container"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script>
+    const contractAddress = '0xdc9a6B7bc956Fed2ECe0a9D4eF02c88a6C484719';
+    const contractABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "issuer",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialIssued",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "valid",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialVerified",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "issuerWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
+			}
+		],
+		"name": "issueCredential",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "verifyCredential",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "getAllCertificates",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "credentialType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "fileLink",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "issuer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "holder",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "credentialHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "valid",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct CredentialContract.Credential[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "getCertificateDetail",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+    const web3 = new Web3(Web3.givenProvider);
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    // Fetch and display the details of a credential
+    async function fetchCredentialDetails() {
+        const credentialHash = document.getElementById('credentialHash').value.trim();
+        const holderAddress = document.getElementById('holderAddress').value.trim();
+
+        // Input validation
+        if (!web3.utils.isAddress(holderAddress) || !credentialHash) {
+            alert("Please enter a valid Holder Address and Credential Hash.");
+            return;
+        }
+
+        const detailsContainer = document.getElementById('details');
+        detailsContainer.innerHTML = '<p>Loading...</p>'; // Show loading text
+
+        try {
+            const credential = await contract.methods.getCertificateDetail(credentialHash, holderAddress).call();
+            displayCredentialDetails(credential);
+        } catch (error) {
+            console.error("Failed to fetch credential details", error);
+            detailsContainer.innerHTML = '<p>Error fetching credential details. Please check the inputs and try again.</p>';
+        }
+    }
+
+    // Display credential details with PDF
+    function displayCredentialDetails(credential) {
+        console.log(credential);
+        const detailsContainer = document.getElementById('details');
+        detailsContainer.innerHTML = `
+            <div class="details-pdf">
+                <iframe src="${credential[1]}" frameborder="0"></iframe>
+            </div>
+            <div class="details-info">
+                <p><label>Credential Type:</label> ${credential[0]}</p>
+                <p><label>File Link:</label> <a href="${credential[1]}" target="_blank">View PDF</a></p>
+                <p><label>Issuer:</label> ${web3.utils.toChecksumAddress(credential[2])}</p>
+                <p><label>Holder:</label> ${web3.utils.toChecksumAddress(credential[3])}</p>
+                <p><label>Timestamp:</label> ${new Date(credential[4] * 1000).toLocaleString()}</p>
+                <p><label>Valid:</label> ${credential[5] ? 'Yes' : 'No'}</p>
+            </div>
+        `;
+    }
+
+    // Function to get URL parameters and initialize the page
+    function initPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const credentialHash = urlParams.get('credentialHash');
+        const holderAddress = urlParams.get('holderAddress');
+
+        if (credentialHash && holderAddress) {
+            document.getElementById('credentialHash').value = credentialHash;
+            document.getElementById('holderAddress').value = holderAddress;
+            fetchCredentialDetails(); // Auto-fetch details based on parameters
+        }
+    }
+
+    // Run the page initialization on load
+    window.onload = initPage;
+</script>
+
+</body>
+</html>

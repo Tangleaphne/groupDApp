@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Credential Gallery</title>
+    <style>
+        /* Styling for the gallery */
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .gallery-item {
+            width: 30%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .gallery-item .details-btn {
+            background-color: #1E90FF;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .gallery-item .details-btn:hover {
+            background-color: #0a7cc3;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;  /* 垂直居中对齐两个元素 */
+            justify-content: space-between; /* 在同一行内，左侧是 h3，右侧是按钮 */
+            margin-top: 10px; /* 添加顶部边距以增加空间 */
+        }
+        
+        .item-header h3 {
+            margin: 0; /* 去除 h3 的默认边距 */
+            flex-grow: 1; /* 让 h3 占据空间，按钮靠右 */
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <!-- Credential Gallery -->
+    <div id="gallery" class="gallery-container"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script>
+    const contractAddress = '0xdc9a6B7bc956Fed2ECe0a9D4eF02c88a6C484719';
+    const contractABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "issuer",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialIssued",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "valid",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialVerified",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "issuerWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
+			}
+		],
+		"name": "issueCredential",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "verifyCredential",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "getAllCertificates",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "credentialType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "fileLink",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "issuer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "holder",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "credentialHash",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "valid",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct CredentialContract.Credential[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "getCertificateDetail",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+    const web3 = new Web3(Web3.givenProvider);
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    async function fetchCredentials() {
+        const accounts = await web3.eth.requestAccounts();
+        const holderAddress = accounts[0]; // Using the first account as an example
+        console.log(holderAddress);
+
+        contract.methods.getAllCertificates(holderAddress).call()
+            .then(credentials => {
+                displayCredentials(credentials);
+            })
+            .catch(error => {
+                console.error("Failed to fetch credentials", error);
+            });
+    }
+
+    // Display credentials in the new gallery format
+    function displayCredentials(credentials) {
+        console.log(credentials);
+        const gallery = document.getElementById('gallery');
+        gallery.innerHTML = ''; // Clear existing content
+
+        credentials.forEach(cred => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+
+            item.innerHTML = `
+                <iframe src="${cred.fileLink}" style="width:100%; height:200px;" frameborder="0"></iframe>
+                <div class="item-header">
+                    <h3>${cred.credentialType}</h3>
+                    <button class="details-btn" 
+                        onclick="location.href = 'Detail.html?credentialHash=${cred.credentialHash}&holderAddress=${cred.holder}'">
+                        Details
+                    </button>
+                </div>
+            `;
+            gallery.appendChild(item);
+        });
+    }
+
+    fetchCredentials();
+</script>
+</body>
+</html>
