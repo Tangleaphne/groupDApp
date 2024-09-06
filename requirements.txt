@@ -1,0 +1,4 @@
+flask
+gunicorn
+pysqlite3
+datetime
