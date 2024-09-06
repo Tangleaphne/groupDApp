@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0376c9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="number"], button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+        button {
+            background-color: #0379ce;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #036db9;
+        }
+        .output {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="container">
+        <h1>Welcome to DApp!</h1>
+        <h2>May I know your name?</h2>
+        <form action="/main" method="post">
+            <input type="hidden" name="role" value="visitor">
+            <input type="text" name="q">
+            <button class="btn">Visitor Enter</button>
+        </form>
+        <form action="/main" method="post">
+            <input type="hidden" name="role" value="issuer">
+            <input type="text" name="q">
+            <button class="btn">Issuer Enter</button>
+        </form>
+        <form action="/mainadmin" method="post">
+            <input type="hidden" name="role" value="manager">
+            <input type="text" name="q">
+            <button class="btn">Manager Enter</button>
+        </form>
+    </div>
+</body>
+</html>
+

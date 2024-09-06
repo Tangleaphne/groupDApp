@@ -44,6 +44,16 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             font-size: 16px;
         }
+        input[type="text"], button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
         button {
             background-color: #0379ce;
             color: white;
@@ -62,20 +72,21 @@
     </style>
 </head>
 <body>
-    <div class="header-bar">
+    <!-- <div class="header-bar">
         <h1>Issue</h1>
-    </div>
+    </div> -->
     <div class="issue-container">
-        <br><br>
-        <p class="issue-label">Issuer: </p>
+        <!-- <br><br> -->
+        <h1>Issue</h1>
+        <!-- <p class="issue-label">Issuer: </p> -->
         <input type="text" placeholder="Issuer Wallet Address" id="issuerWalletAddress">
-        <p class="issue-label">Holder: </p>
+        <!-- <p class="issue-label">Holder: </p> -->
         <input type="text" placeholder="Holder Wallet Address" id="holderWalletAddress">
-        <p class="issue-label">Type: </p>
+        <!-- <p class="issue-label">Type: </p> -->
         <input type="text" placeholder="Credential Type" id="credentialType">
-        <p class="issue-label">Link: </p>
+        <!-- <p class="issue-label">Link: </p> -->
         <input type="text" placeholder="File Link" id="fileLink">
-		<br>
+		<br><br>
         <button class="btn" onclick="issueCredential()">Confirm</button>
         <br>
         <p id="issuestate"></p>
@@ -201,7 +212,7 @@
         });
 
 		//0x7beabf790ee4a7de7296813ffaa26560dd99ddb2d193d50bab7f03496c0513ed
-
+        //0xaf9d0aacd43bfe9040dd03591cef4e7f102b4a4972fcc6f68342a4720d680b48
     }
 
 </script>
