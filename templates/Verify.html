@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Credential</title>
+    <style>
+        /* Styling for the verify */
+        
+    </style>
+</head>
+<body>
+    <div class="header-bar"></div>
+        <h1>Verify</h1>
+    </div>
+    <div class="verify-container">
+		<p class="issue-label">Credential Hash: </p>
+        <input type="text" placeholder="Credential Hash" id="credentialHash">
+        <p class="issue-label">Holder: </p>
+        <input type="text" placeholder="Holder Wallet Address" id="holderWalletAddress">
+		<br>
+        <button class="btn" onclick="verifyCredential()">Confirm</button>
+        <br>
+        <p id="verifystate"></p>
+        <br><br>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script>
+    const contractAddress = '0x01d1CF5E3f8BEEcB27F5DbD3D5483F9419757C86';
+    const contractABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "valid",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialVerified",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			}
+		],
+		"name": "verifyCredential",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+
+	const web3 = new Web3(Web3.givenProvider);
+	const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    async function verifyCredential() {
+        const accounts = await web3.eth.requestAccounts(); 
+        console.log(accounts);
+        const credentialHash = document.getElementById("credentialHash").value;
+        const holderWalletAddress = document.getElementById("holderWalletAddress").value;
+        console.log(credentialHash, holderWalletAddress);
+        const isValid = await contract.methods.verifyCredential(credentialHash, holderWalletAddress).call();
+
+		document.getElementById('verifystate').innerText = "State is :"+ isValid;
+        if(isValid==True){
+			document.getElementById('verifystate').innerText = "That is True!";
+		} else {document.getElementById('verifystate').innerText = "That is False!";}
+    }
+</script>
+</body>
+</html>
