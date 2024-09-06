@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Issue Credential</title>
+    <style>
+        /* Styling for the verify */
+        
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <h1>Issue</h1>
+    </div>
+    <div class="issue-container">
+        <br><br>
+        <p class="issue-label">Issuer: </p>
+        <input type="text" placeholder="Issuer Wallet Address" id="issuerWalletAddress">
+        <p class="issue-label">Holder: </p>
+        <input type="text" placeholder="Holder Wallet Address" id="holderWalletAddress">
+        <p class="issue-label">Type: </p>
+        <input type="text" placeholder="Credential Type" id="credentialType">
+        <p class="issue-label">Link: </p>
+        <input type="text" placeholder="File Link" id="fileLink">
+		<br>
+        <button class="btn" onclick="issueCredential()">Confirm</button>
+        <br>
+        <p id="issuestate"></p>
+        <br><br>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
+<script>
+    const contractAddress = '0x01d1CF5E3f8BEEcB27F5DbD3D5483F9419757C86';
+    const contractABI = [
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "issuer",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "holder",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "credentialHash",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "CredentialIssued",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "issuerWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "holderWalletAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "credentialType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "fileLink",
+				"type": "string"
+			}
+		],
+		"name": "issueCredential",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
+
+	const web3 = new Web3(Web3.givenProvider);
+	const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    async function issueCredential() {
+        const accounts = await web3.eth.requestAccounts(); 
+        console.log(accounts);
+        const issuerWalletAddress = document.getElementById("issuerWalletAddress").value;
+        const holderWalletAddress = document.getElementById("holderWalletAddress").value;
+        const credentialType = document.getElementById("credentialType").value;
+        const fileLink = document.getElementById("fileLink").value;
+        console.log(issuerWalletAddress, holderWalletAddress, credentialType, fileLink);
+        const credentialHash = await contract.methods.issueCredential(issuerWalletAddress, holderWalletAddress, credentialType, fileLink).call();
+
+        document.getElementById('issuestate').innerText = "Credential Hash is :"+ credentialHash;
+    }
+
+</script>
+</body>
+
