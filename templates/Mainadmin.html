@@ -75,11 +75,13 @@
         <h2>Hi Manager {{r}}!</h2>
         <h2>This is ADMIN page</h2>
         <form action = "/viewDB" method="post">
-            <!-- <input type="submit" value="View Database"> -->
+            <input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
             <button class="btn">View Databas</button>
         </form>
         <form action = "/delDB" method="post">
-            <!-- <input type="submit" value="Delete Database"> -->
+            <input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
             <button class="btn">Delete Database</button>
         </form>
         <form action = "/" method="post">

@@ -75,12 +75,18 @@
         <h2>Hi {{r}}!</h2>
         <h2>What can I help you?</h2>
         <form action="/verify" method="post">
+            <input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
             <button class="btn">Verify</button>
         </form>
         <form action="/gallery" method="post">
+            <input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
             <button class="btn">Gallery</button>
         </form>
         <form action="/detail" method="post">
+            <input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
             <button class="btn">Detail</button>
         </form>
         <form action = "/" method="post">
