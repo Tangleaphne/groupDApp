@@ -76,6 +76,33 @@ def gallery():
     r = request.form.get("q")
     return render_template('Gallery.html', role=role, r=r)
 
+@app.route('/viewDB',methods=["get","post"])
+def viewDB():
+    role = request.form.get("role")
+    r = request.form.get("q")
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+    c.execute("select * from user")
+    t = ""
+    for row in c:
+        t += str(row) + "\n"
+    conn.commit()
+    c.close()
+    conn.close()
+    return render_template('viewDB.html', t=t, role=role, r=r)
+
+@app.route('/delDB',methods=["get","post"])
+def delDB():
+    role = request.form.get("role")
+    r = request.form.get("q")
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+    c.execute("delete from user")
+    conn.commit()
+    c.close()
+    conn.close()
+    return render_template('deleteDB.html', role=role, r=r)
+
 if __name__=='__main__':
     app.run()
 
