@@ -117,9 +117,32 @@
         const credentialType = document.getElementById("credentialType").value.trim();
         const fileLink = document.getElementById("fileLink").value.trim();
         console.log(issuerWalletAddress, holderWalletAddress, credentialType, fileLink);
-        const credentialHash = await contract.methods.issueCredential(issuerWalletAddress, holderWalletAddress, credentialType, fileLink).call();
+        // const credentialHash = await contract.methods.issueCredential(issuerWalletAddress, holderWalletAddress, credentialType, fileLink).call();
+		contract.methods.issueCredential(
+            issuerWalletAddress,
+            holderWalletAddress,
+            credentialType,
+            fileLink
+        )
+        .send({ from: accounts[0] })
+        .on('receipt', function(receipt) {
+            // 监听交易回执
+            console.log('Issue receipt:', receipt);
+            
+            // 获取事件返回的数据
+            const credentialHash = receipt.events.CredentialIssued.returnValues.credentialHash;
+            console.log("Credential Hash:", credentialHash);
 
-        document.getElementById('issuestate').innerText = "Credential Hash is :"+ credentialHash;
+            // 输出到页面
+            document.getElementById('issuestate').innerText = "Credential Issued! Credential Hash: " + credentialHash;
+        })
+        .on('error', function(error, receipt) {
+            console.error('An error occurred:', error);
+            document.getElementById('issuestate').innerText = "Error issuing credential: " + error.message;
+        });
+
+		//0x7beabf790ee4a7de7296813ffaa26560dd99ddb2d193d50bab7f03496c0513ed
+
     }
 
 </script>

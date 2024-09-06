@@ -95,9 +95,23 @@
         const credentialHash = document.getElementById("credentialHash").value.trim();
         const holderWalletAddress = document.getElementById("holderWalletAddress").value.trim();
         console.log(credentialHash, holderWalletAddress);
-        const isValid = await contract.methods.verifyCredential(credentialHash, holderWalletAddress).call();
-
-		document.getElementById('verifystate').innerText = "State is :"+ isValid;
+        // const isValid = await contract.methods.verifyCredential(credentialHash, holderWalletAddress).call();
+		contract.methods.verifyCredential(credentialHash, holderWalletAddress)
+		.send({ from: accounts[0] })
+		.on('receipt', function(receipt) {
+			// 监听交易回执并获取事件数据
+			console.log('Verify receipt:', receipt);
+			const isValid = receipt.events.CredentialVerified.returnValues.valid;
+			console.log("Credential Validity:", isValid);
+			
+			// 输出验证状态
+			document.getElementById('verifystate').innerText = isValid ? "That is True!" : "That is False!";
+		})
+		.on('error', function(error, receipt) {
+			console.error('An error occurred:', error);
+			document.getElementById('verifystate').innerText = "Error verifying credential: " + error.message;
+		});
+		//document.getElementById('verifystate').innerText = "State is :"+ isValid;
         // if(isValid==True){
 		// 	document.getElementById('verifystate').innerText = "That is True!";
 		// } else {document.getElementById('verifystate').innerText = "That is False!";}
