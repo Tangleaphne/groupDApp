@@ -26,7 +26,17 @@
         <button class="btn" onclick="issueCredential()">Confirm</button>
         <br>
         <p id="issuestate"></p>
-        <br><br>
+        <br>
+		<!-- <form action="{{ url_for('backmain') }}" method="post">
+			<input type="hidden" name="role" value="issuer">
+			<button class="btn">Main Menu</button>
+		</form> -->
+		<form action="/backmain" method="post">
+			<input type="hidden" name="role" value="issuer">
+			<input type="hidden" name="q" value="{{r}}">
+			<button class="btn">Main Menu</button>
+		</form>
+		<br>
     </div>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
@@ -117,7 +127,7 @@
         const credentialType = document.getElementById("credentialType").value.trim();
         const fileLink = document.getElementById("fileLink").value.trim();
         console.log(issuerWalletAddress, holderWalletAddress, credentialType, fileLink);
-        // const credentialHash = await contract.methods.issueCredential(issuerWalletAddress, holderWalletAddress, credentialType, fileLink).call();
+        
 		contract.methods.issueCredential(
             issuerWalletAddress,
             holderWalletAddress,
@@ -126,14 +136,10 @@
         )
         .send({ from: accounts[0] })
         .on('receipt', function(receipt) {
-            // 监听交易回执
             console.log('Issue receipt:', receipt);
-            
-            // 获取事件返回的数据
             const credentialHash = receipt.events.CredentialIssued.returnValues.credentialHash;
             console.log("Credential Hash:", credentialHash);
 
-            // 输出到页面
             document.getElementById('issuestate').innerText = "Credential Issued! Credential Hash: " + credentialHash;
         })
         .on('error', function(error, receipt) {

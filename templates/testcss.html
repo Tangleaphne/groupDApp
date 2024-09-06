@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Issue Credential</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header-bar {
+            background-color: #1d3a6e;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            height: 60px;
+            z-index: 1000;
+        }
+        .header-bar img {
+            height: 40px;
+            margin-right: 15px;
+        }
+        .header-bar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: #002147; /* 使用与图片一致的深蓝色 */
+            padding-top: 60px; /* Align with header */
+            box-sizing: border-box;
+            transition: width 0.3s;
+            overflow: hidden;
+        }
+        .sidebar.collapsed {
+            width: 60px; /* Sidebar collapsed width */
+        }
+        .sidebar img {
+            display: block;
+            margin: 20px auto;
+            width: 80%;
+            transition: opacity 0.3s;
+        }
+        .sidebar.collapsed img {
+            opacity: 0; /* Hide logo when collapsed */
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: white;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed a {
+            justify-content: center;
+            padding: 15px 10px; /* Adjust padding when collapsed */
+        }
+        .sidebar a:hover {
+            background-color: #1d3a6e;
+        }
+        .sidebar-icon {
+            margin-right: 10px;
+        }
+        .sidebar.collapsed .sidebar-icon {
+            margin-right: 0; /* Remove margin when collapsed */
+        }
+        .sidebar a span {
+            display: inline-block;
+            transition: opacity 0.3s;
+        }
+        .sidebar.collapsed a span {
+            opacity: 0; /* Hide text when collapsed */
+        }
+        .toggle-btn {
+            background-color: #1d3a6e;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 220px; /* Initial position when sidebar is expanded */
+            transition: left 0.3s;
+            z-index: 1000;
+        }
+        .sidebar.collapsed + .toggle-btn {
+            left: 60px; /* Adjust button position when sidebar is collapsed */
+        }
+        .content {
+            flex: 1;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed ~ .content {
+            margin-left: 80px; /* Adjust for collapsed sidebar */
+        }
+        .issue-container {
+            max-width: 400px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .issue-container p {
+            margin: 0;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .issue-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #144275;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #1d3a6e;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 1000;
+                transform: translateX(-220px);
+                transition: transform 0.3s;
+            }
+            .sidebar.collapsed {
+                transform: translateX(0);
+            }
+            .toggle-btn {
+                left: 10px;
+                top: 70px;
+            }
+            .sidebar.collapsed + .toggle-btn {
+                left: 230px;
+            }
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <img src="https://upload.wikimedia.org/wikipedia/en/0/0c/Nanyang_Technological_University_logo.svg" alt="NTU Logo">
+        <h1>Issue</h1>
+    </div>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <img src="https://upload.wikimedia.org/wikipedia/en/0/0c/Nanyang_Technological_University_logo.svg" alt="NTU Logo">
+            <a href="#"><span class="sidebar-icon">📤</span><span>Issue</span></a>
+            <a href="#"><span class="sidebar-icon">✔️</span><span>Verify</span></a>
+            <a href="#"><span class="sidebar-icon">🖼️</span><span>Galary</span></a>
+            <a href="#"><span class="sidebar-icon">📋</span><span>Details</span></a>
+            <a href="#"><span class="sidebar-icon">📑</span><span>Others</span></a>
+        </div>
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="content" id="content">
+            <div class="issue-container">
+                <p class="issue-label">Issuer: </p>
+                <input type="text" placeholder="issuer wallet address" id="issuerWalletAddress">
+                <p class="issue-label">Holder: </p>
+                <input type="text" placeholder="holder wallet address" id="holderWalletAddress">
+                <p class="issue-label">Type: </p>
+                <input type="text" placeholder="credential type" id="credentialType">
+                <p class="issue-label">Link: </p>
+                <input type="text" placeholder="file link" id="fileLink">
+                <button class="btn" onclick="issueCredential()">Confirm</button>
+                <p id="issuestate"></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

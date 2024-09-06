@@ -75,6 +75,11 @@
 
     <!-- Credential Details -->
     <div id="details" class="details-container"></div>
+	<form action="/backmain" method="post">
+		<input type="hidden" name="role" value="{{role}}">
+		<input type="hidden" name="q" value="{{r}}">
+		<button class="btn">Main Menu</button>
+	</form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>

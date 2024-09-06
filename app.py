@@ -8,25 +8,73 @@ app=Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/main', methods=['GET', 'POST'])
+def main():
+    role = request.form.get("role")
+    r = request.form.get("q")
+    current_time = datetime.datetime.now()
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+    c.execute("insert into user values (?, ?, ?)", (role, r, current_time))
+    conn.commit()
+    c.close()
+    conn.close()
+    if role == "visitor":
+        return render_template('Main.html', role=role, r=r)
+    else:
+        return render_template('Mainissuer.html', role=role, r=r)
+
 @app.route('/backmain',methods=["get","post"])
 def backmain():
-    return render_template('index.html')
+    role = request.form.get("role")
+    r = request.form.get("q")
+    if role == "visitor":
+        return render_template('Main.html', role=role, r=r)
+    else:
+        return render_template('Mainissuer.html', role=role, r=r)
+
+@app.route('/mainadmin',methods=["get","post"])
+def mainadmin():
+    role = request.form.get("role")
+    r = request.form.get("q")
+    current_time = datetime.datetime.now()
+    conn = sqlite3.connect('user.db')
+    c = conn.cursor()
+    c.execute("insert into user values (?, ?, ?)", (role, r, current_time))
+    conn.commit()
+    c.close()
+    conn.close()
+    return render_template('Mainadmin.html', role=role, r=r)
+
+@app.route('/backmainadmin',methods=["get","post"])
+def backmainadmin():
+    role = request.form.get("role")
+    r = request.form.get("q")
+    return render_template('Mainadmin.html', role=role, r=r)
 
 @app.route('/issue',methods=["get","post"])
 def issue():
-    return render_template('Issue.html')
+    role = request.form.get("role")
+    r = request.form.get("q")
+    return render_template('Issue.html', role=role, r=r)
 
 @app.route('/verify',methods=["get","post"])
 def verify():
-    return render_template('Verify.html')
+    role = request.form.get("role")
+    r = request.form.get("q")
+    return render_template('Verify.html', role=role, r=r)
 
 @app.route('/detail',methods=["get","post"])
 def detail():
-    return render_template('Detail.html')
+    role = request.form.get("role")
+    r = request.form.get("q")
+    return render_template('Detail.html', role=role, r=r)
 
 @app.route('/gallery',methods=["get","post"])
 def gallery():
-    return render_template('Gallery.html')
+    role = request.form.get("role")
+    r = request.form.get("q")
+    return render_template('Gallery.html', role=role, r=r)
 
 if __name__=='__main__':
     app.run()

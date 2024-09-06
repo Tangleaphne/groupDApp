@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Menu Page</title>
+    <!-- Load Web3.js -->
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js"></script>
+    <!-- Custom CSS -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -70,24 +72,20 @@
 
 <body>
     <div class="container">
-        <h1>Welcome to DApp!</h1>
-        <h2>May I know your name?</h2>
-        <form action="/main" method="post">
-            <input type="hidden" name="role" value="visitor">
-            <input type="text" name="q">
-            <button class="btn">Visitor Enter</button>
+        <h2>Hi Manager {{r}}!</h2>
+        <h2>This is ADMIN page</h2>
+        <form action = "/viewDB" method="post">
+            <!-- <input type="submit" value="View Database"> -->
+            <button class="btn">View Databas</button>
         </form>
-        <form action="/main" method="post">
-            <input type="hidden" name="role" value="issuer">
-            <input type="text" name="q">
-            <button class="btn">Issuer Enter</button>
+        <form action = "/delDB" method="post">
+            <!-- <input type="submit" value="Delete Database"> -->
+            <button class="btn">Delete Database</button>
         </form>
-        <form action="/mainadmin" method="post">
-            <input type="hidden" name="role" value="manager">
-            <input type="text" name="q">
-            <button class="btn">Manager Enter</button>
+        <form action = "/" method="post">
+            <button class="btn">Logout</button>
         </form>
     </div>
-</body>
+</body >
 </html>
 
