@@ -112,10 +112,10 @@
     async function issueCredential() {
         const accounts = await web3.eth.requestAccounts(); 
         console.log(accounts);
-        const issuerWalletAddress = document.getElementById("issuerWalletAddress").value;
-        const holderWalletAddress = document.getElementById("holderWalletAddress").value;
-        const credentialType = document.getElementById("credentialType").value;
-        const fileLink = document.getElementById("fileLink").value;
+        const issuerWalletAddress = document.getElementById("issuerWalletAddress").value.trim();
+        const holderWalletAddress = document.getElementById("holderWalletAddress").value.trim();
+        const credentialType = document.getElementById("credentialType").value.trim();
+        const fileLink = document.getElementById("fileLink").value.trim();
         console.log(issuerWalletAddress, holderWalletAddress, credentialType, fileLink);
         const credentialHash = await contract.methods.issueCredential(issuerWalletAddress, holderWalletAddress, credentialType, fileLink).call();
 

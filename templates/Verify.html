@@ -92,15 +92,15 @@
     async function verifyCredential() {
         const accounts = await web3.eth.requestAccounts(); 
         console.log(accounts);
-        const credentialHash = document.getElementById("credentialHash").value;
-        const holderWalletAddress = document.getElementById("holderWalletAddress").value;
+        const credentialHash = document.getElementById("credentialHash").value.trim();
+        const holderWalletAddress = document.getElementById("holderWalletAddress").value.trim();
         console.log(credentialHash, holderWalletAddress);
         const isValid = await contract.methods.verifyCredential(credentialHash, holderWalletAddress).call();
 
 		document.getElementById('verifystate').innerText = "State is :"+ isValid;
-        if(isValid==True){
-			document.getElementById('verifystate').innerText = "That is True!";
-		} else {document.getElementById('verifystate').innerText = "That is False!";}
+        // if(isValid==True){
+		// 	document.getElementById('verifystate').innerText = "That is True!";
+		// } else {document.getElementById('verifystate').innerText = "That is False!";}
     }
 </script>
 </body>
