@@ -84,6 +84,16 @@ def store_credential():
         with conn:
             conn.execute('insert into credentialHash2pdf (hash, pdf_data) VALUES (?, ?)', 
                          (credentialHash, pdf_data))
+        # cursor = conn.cursor()
+        # print("?")
+        # cursor.execute("select * from credentialHash2pdf")
+        # c = conn.cursor()
+        # c.execute("select * from credentialHash2pdf")
+        # for row in c:
+        #     hash_value, pdf_data = row
+        #     print(hash_value)
+        #     print(pdf_data)
+        conn.commit()
         conn.close()
         print("success")
         return {"message": "Credential stored successfully"}, 200

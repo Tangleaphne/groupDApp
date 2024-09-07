@@ -11,6 +11,10 @@
         /* Search bar styling */
         .search-container {
             margin-bottom: 20px;
+			display: flex;
+			align-items: center;  /* 垂直居中 */
+			justify-content: flex-start;  /* 元素在容器内水平排列 */
+			gap: 10px;  /* 可选，添加一点间距 */
         }
 
         .search-bar {
@@ -22,7 +26,7 @@
 
         .search-button {
             padding: 10px 15px;
-            background-color: #f0ad4e;
+            background-color: #0379ce;
             border: none;
             border-radius: 5px;
             color: white;
@@ -30,7 +34,7 @@
         }
 
         .search-button:hover {
-            background-color: #ec971f;
+            background-color: #036db9;
         }
 
         /* Layout for details */
@@ -71,20 +75,22 @@
         <input class="search-bar" type="text" placeholder="Credential Hash" id="credentialHash">
         <input class="search-bar" type="text" placeholder="Holder Address" id="holderAddress">
         <button class="search-button" onclick="fetchCredentialDetails()">Search</button>
+		<form action="/backmain" method="post">
+			<input type="hidden" name="role" value="{{role}}">
+			<input type="hidden" name="q" value="{{r}}">
+			<button class="search-button">Main Menu</button>
+		</form>
     </div>
 
-    <!-- Credential Details -->
-    <div id="details" class="details-container"></div>
-	<form action="/backmain" method="post">
-		<input type="hidden" name="role" value="{{role}}">
-		<input type="hidden" name="q" value="{{r}}">
-		<button class="btn">Main Menu</button>
-	</form>
+	<!-- Credential Details -->
+	<div id="details" class="details-container">
+	</div>
+    
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
 <script>
-    const contractAddress = '0xdc9a6B7bc956Fed2ECe0a9D4eF02c88a6C484719';
+    const contractAddress = '0x01d1CF5E3f8BEEcB27F5DbD3D5483F9419757C86';
     const contractABI = [
 	{
 		"anonymous": false,
@@ -338,7 +344,7 @@
 
         try {
             const credential = await contract.methods.getCertificateDetail(credentialHash, holderAddress).call();
-            displayCredentialDetails(credential);
+            displayCredentialDetails(credential, credentialHash);
         } catch (error) {
             console.error("Failed to fetch credential details", error);
             detailsContainer.innerHTML = '<p>Error fetching credential details. Please check the inputs and try again.</p>';
@@ -346,22 +352,41 @@
     }
 
     // Display credential details with PDF
-    function displayCredentialDetails(credential) {
+    async function displayCredentialDetails(credential, credentialHash) {
         console.log(credential);
         const detailsContainer = document.getElementById('details');
-        detailsContainer.innerHTML = `
-            <div class="details-pdf">
-                <iframe src="${credential[1]}" frameborder="0"></iframe>
-            </div>
-            <div class="details-info">
-                <p><label>Credential Type:</label> ${credential[0]}</p>
-                <p><label>File Link:</label> <a href="${credential[1]}" target="_blank">View PDF</a></p>
-                <p><label>Issuer:</label> ${web3.utils.toChecksumAddress(credential[2])}</p>
-                <p><label>Holder:</label> ${web3.utils.toChecksumAddress(credential[3])}</p>
-                <p><label>Timestamp:</label> ${new Date(credential[4] * 1000).toLocaleString()}</p>
-                <p><label>Valid:</label> ${credential[5] ? 'Yes' : 'No'}</p>
-            </div>
-        `;
+
+        try {
+			const response = await fetch(`/get-pdf/${credentialHash}`);
+			if (!response.ok) {
+				throw new Error('PDF not found');
+			}
+	
+			const pdfBlob = await response.blob(); // 获取 PDF Blob
+	
+			// 将 Blob 转换为 Base64
+			const reader = new FileReader();
+			reader.onloadend = function() {
+				const base64data = reader.result;
+				detailsContainer.innerHTML = `
+					<div class="details-pdf">
+						<iframe src="${base64data}" frameborder="0"></iframe>
+					</div>
+					<div class="details-info">
+						<p><label>Credential Type:</label> ${credential[0]}</p>
+						<p><label>File Link:</label> <a href="${credential[1]}" target="_blank">View PDF</a></p>
+						<p><label>Issuer:</label> ${web3.utils.toChecksumAddress(credential[2])}</p>
+						<p><label>Holder:</label> ${web3.utils.toChecksumAddress(credential[3])}</p>
+						<p><label>Timestamp:</label> ${new Date(credential[4] * 1000).toLocaleString()}</p>
+						<p><label>Valid:</label> ${credential[5] ? 'Yes' : 'No'}</p>
+					</div>
+				`;
+			};
+			reader.readAsDataURL(pdfBlob); // 将 Blob 转换为 Base64
+		} catch (error) {
+			console.error("Failed to fetch PDF", error);
+			detailsContainer.innerHTML = '<p>Error fetching PDF. Please try again.</p>';
+		}
     }
 
     // Function to get URL parameters and initialize the page
