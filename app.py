@@ -1,7 +1,8 @@
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,jsonify
 import sqlite3
 import datetime
 import requests
+import os
 
 app=Flask(__name__)
 
@@ -70,36 +71,42 @@ def store_credential():
     credentialHash = data.get('credentialHash')
     fileLink = data.get('fileLink')
 
-    if not credentialHash or not fileLink:
-        return {"message": "Missing data"}, 400
+    if not credentialHash:
+        return jsonify({"message": "Missing credentialHash"}), 400
 
-    # 下载 PDF 文件并获取其二进制内容
-    try:
-        response = requests.get(fileLink)
-        response.raise_for_status()  # 检查请求是否成功
-        pdf_data = response.content  # PDF 的二进制内容
+    print(fileLink)
+    if fileLink.startswith(('http://', 'https://')):
+        # 下载 PDF 文件并获取其二进制内容
+        try:
+            response = requests.get(fileLink)
+            response.raise_for_status()  # 检查请求是否成功
+            pdf_data = response.content  # PDF 的二进制内容
+        except requests.RequestException as e:
+            return jsonify({"message": f"Error downloading file: {str(e)}"}), 500
+    else:
+        print("local")
+        # 本地文件路径：读取文件
+        if not os.path.isfile(fileLink):
+            return jsonify({"message": "Local file not found"}), 404
         
-        # 将 credentialHash 和 pdf_data 存入数据库
+        try:
+            with open(fileLink, 'rb') as f:
+                pdf_data = f.read()
+        except Exception as e:
+            return jsonify({"message": f"Error reading file: {str(e)}"}), 500
+
+    # 将 credentialHash 和 pdf_data 存入数据库
+    try:
         conn = sqlite3.connect('user.db')
         with conn:
-            conn.execute('insert into credentialHash2pdf (hash, pdf_data) VALUES (?, ?)', 
+            conn.execute('INSERT INTO credentialHash2pdf (hash, pdf_data) VALUES (?, ?)', 
                          (credentialHash, pdf_data))
-        # cursor = conn.cursor()
-        # print("?")
-        # cursor.execute("select * from credentialHash2pdf")
-        # c = conn.cursor()
-        # c.execute("select * from credentialHash2pdf")
-        # for row in c:
-        #     hash_value, pdf_data = row
-        #     print(hash_value)
-        #     print(pdf_data)
         conn.commit()
         conn.close()
-        print("success")
-        return {"message": "Credential stored successfully"}, 200
+        return jsonify({"message": "Credential stored successfully"}), 200
 
-    except requests.RequestException as e:
-        return {"message": f"Error downloading file: {str(e)}"}, 500
+    except sqlite3.Error as e:
+        return jsonify({"message": f"Database error: {str(e)}"}), 500
 
 @app.route('/verify',methods=["get","post"])
 def verify():
