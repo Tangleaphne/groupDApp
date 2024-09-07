@@ -342,6 +342,8 @@
 
     const web3 = new Web3(Web3.givenProvider);
     const contract = new web3.eth.Contract(contractABI, contractAddress);
+	const role = "{{role}}";
+	const r ="{{r}}";
 
     async function fetchCredentials() {
         const accounts = await web3.eth.requestAccounts();
@@ -386,7 +388,7 @@
 						<div class="item-header">
 							<h3>${cred.credentialType}</h3>
 							<button class="details-btn" 
-								onclick="location.href = '/detail?credentialHash=${cred.credentialHash}&holderAddress=${cred.holder}'">
+								onclick="location.href = '/detail?credentialHash=${cred.credentialHash}&holderAddress=${cred.holder}&role=${role}&r=${r}'">
 								Details
 							</button>
 						</div>
