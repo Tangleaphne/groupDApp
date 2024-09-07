@@ -199,10 +199,24 @@
             fileLink
         )
         .send({ from: accounts[0] })
-        .on('receipt', function(receipt) {
+        .on('receipt', async function(receipt) {
             console.log('Issue receipt:', receipt);
             const credentialHash = receipt.events.CredentialIssued.returnValues.credentialHash;
             console.log("Credential Hash:", credentialHash);
+
+            // 发送POST请求到Flask后端以存储凭证数据
+			const response = await fetch('/store-credential', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					credentialHash: credentialHash,
+					fileLink: fileLink
+				})
+			});
+		
+			const result = await response.json();
 
             document.getElementById('issuestate').innerText = "Credential Issued! Credential Hash: " + credentialHash;
         })
