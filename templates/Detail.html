@@ -76,8 +76,8 @@
         <input class="search-bar" type="text" placeholder="Holder Address" id="holderAddress">
         <button class="search-button" onclick="fetchCredentialDetails()">Search</button>
 		<form action="/backmain" method="post">
-			<input type="hidden" name="role" value="{{role}}">
-			<input type="hidden" name="q" value="{{r}}">
+			<input type="hidden" id="roleInput" name="role" value="{{role}}">
+			<input type="hidden" id="qInput" name="q" value="{{r}}">
 			<button class="search-button">Main Menu</button>
 		</form>
     </div>
@@ -394,6 +394,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const credentialHash = urlParams.get('credentialHash');
         const holderAddress = urlParams.get('holderAddress');
+		document.getElementById('roleInput').value = urlParams.get('role');
+		document.getElementById('qInput').value = urlParams.get('r');
+
 
         if (credentialHash && holderAddress) {
             document.getElementById('credentialHash').value = credentialHash;

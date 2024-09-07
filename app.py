@@ -35,6 +35,8 @@ def main():
 def backmain():
     role = request.form.get("role")
     r = request.form.get("q")
+    print(role)
+    print(r)
     if role == "visitor":
         return render_template('Main.html', role=role, r=r)
     else:
@@ -118,7 +120,6 @@ def verify():
 def detail():
     role = request.form.get("role")
     r = request.form.get("q")
-
     credential_hash = request.args.get('credentialHash')
     holder_address = request.args.get('holderAddress')
 
